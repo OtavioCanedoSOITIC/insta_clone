@@ -91,25 +91,70 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(children: [
-        Container(
-          height: 75, // Altura para os ícones dos Stories
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: List.generate(10, (index) {
-              return Container(
-                margin:
-                    EdgeInsets.only(right: 16), // Espaçamento entre os ícones
-                child: Icon(
-                  Icons.account_circle,
-                  color: Colors.white,
-                  size: 50,
-                ),
-              );
-            }),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 120,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: List.generate(10, (index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.account_circle,
+                        color: Colors.white,
+                        size: 60,
+                      ),
+                      Text(
+                        index == 0 ? 'Você' : 'Nome $index',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
           ),
-        ),
-      ]),
+          Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.account_circle,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      'nomeusuario',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.more_vert,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                color: Colors.grey,
+                height: 300,
+              ),
+            ],
+          )
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedItem,
@@ -118,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }),
         backgroundColor: Colors.black,
         fixedColor: Colors.white,
-        unselectedItemColor: Colors.white.withOpacity(0.5),
+        unselectedItemColor: Colors.white.withOpacity(0.6),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
