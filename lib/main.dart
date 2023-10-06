@@ -91,70 +91,150 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 120,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: List.generate(10, (index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.account_circle,
-                        color: Colors.white,
-                        size: 60,
-                      ),
-                      Text(
-                        index == 0 ? 'Você' : 'Nome $index',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                );
-              }),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 120,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: List.generate(10, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.account_circle,
+                          color: Colors.white,
+                          size: 60,
+                        ),
+                        Text(
+                          index == 0 ? 'Você' : 'Nome $index',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
             ),
-          ),
-          Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 5,
+              itemBuilder: (BuildContext context, int index) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.account_circle,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      'nomeusuario',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.account_circle,
+                            color: Colors.white,
+                            size: 50,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            'nomeusuario',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                          ),
+                        ],
                       ),
                     ),
-                    Spacer(),
-                    Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
+                    Container(
+                      color: Colors.grey,
+                      height: 300,
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.favorite_border,
+                              color: Colors.white),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chat_bubble_outline_outlined,
+                              color: Colors.white),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.send_outlined,
+                              color: Colors.white),
+                          onPressed: () {},
+                        ),
+                        Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.bookmark_outline,
+                              color: Colors.white),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    const Row(
+                      children: [
+                        SizedBox(width: 10),
+                        Text(
+                          '1000 curtidas',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    const Row(
+                      children: [
+                        SizedBox(width: 10),
+                        Text(
+                          'nomeusuario ',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          'Descrição do post',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    const Row(
+                      children: [
+                        SizedBox(width: 10),
+                        Text(
+                          'Ver todos comentários',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    const Row(
+                      children: [
+                        SizedBox(width: 10),
+                        Text(
+                          'há 5 minutos • Ver tradução',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ),
-              Container(
-                color: Colors.grey,
-                height: 300,
-              ),
-            ],
-          )
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedItem,
