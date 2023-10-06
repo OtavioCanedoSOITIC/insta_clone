@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +58,97 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedItem = 0;
+  final List people = [
+    {
+      'name': 'Otavio Canedo',
+      'username': 'otaviocanedo',
+      'likes': '100',
+      'desc':
+          'Desenvolvedor entusiasta em busca de soluções inovadoras! 💻🚀 #CodeLife',
+      'img': '',
+    },
+    {
+      'name': 'Gui Miranda',
+      'username': 'guimiranda',
+      'likes': '110',
+      'desc': 'Apaixonado por programação e tecnologia. 💡🖥️ #DevLife',
+      'img': '',
+    },
+    {
+      'name': 'Luccas Benedetti',
+      'username': 'luccasbenedetti',
+      'likes': '120',
+      'desc':
+          'Explorando o mundo da programação com paixão e dedicação! 🌍👨‍💻',
+      'img': '',
+    },
+    {
+      'name': 'Vini Charleaux',
+      'username': 'vinicharleaux',
+      'likes': '130',
+      'desc':
+          'Amante do código e da criatividade. 🎵💻 Juntos, podemos criar coisas incríveis!',
+      'img': '',
+    },
+    {
+      'name': 'Hiago Martins',
+      'username': 'hiagomartins',
+      'likes': '140',
+      'desc':
+          'Focado em aprender e evoluir a cada linha de código! 📚💻 #CodingJourney',
+      'img': '',
+    },
+    {
+      'name': 'Danilo',
+      'username': 'danilo',
+      'likes': '150',
+      'desc':
+          'Vivendo a vida com paixão pela programação! 🌟👨‍💻 #CodePassion',
+      'img': '',
+    },
+    {
+      'name': 'Alexandre',
+      'username': 'alexandre',
+      'likes': '160',
+      'desc':
+          'Amor pela tecnologia e pela resolução de problemas. 💡🔧 Juntos, podemos criar um futuro digital incrível!',
+      'img': '',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPhotos();
+  }
+
+  Future<void> fetchPhotos() async {
+    final apiKey = 'U7KfROdTkvR0sWH5PBIxIULBT5KIvoGEeyadd2kbLucDgk1tTJPNW01E';
+    final query = 'technology';
+
+    final response = await http.get(
+        Uri.parse('https://api.pexels.com/v1/search?query=$query'),
+        headers: {
+          'Authorization': apiKey,
+        });
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      // Atualiza a URL da imagem para a primeira pessoa na lista
+      setState(() {
+        people[0]['img'] = data['photos'][0]['src']['small'];
+        people[1]['img'] = data['photos'][1]['src']['small'];
+        people[2]['img'] = data['photos'][2]['src']['small'];
+        people[3]['img'] = data['photos'][3]['src']['small'];
+        people[4]['img'] = data['photos'][4]['src']['small'];
+        people[5]['img'] = data['photos'][5]['src']['small'];
+        people[6]['img'] = data['photos'][6]['src']['small'];
+      });
+    } else {
+      throw Exception('Failed to load photos');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 120,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: List.generate(10, (index) {
+                children: List.generate(people.length, (index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -109,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           size: 60,
                         ),
                         Text(
-                          index == 0 ? 'Você' : 'Nome $index',
+                          people[index]['username'],
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -124,42 +217,40 @@ class _MyHomePageState extends State<MyHomePage> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 5,
+              itemCount: people.length,
               itemBuilder: (BuildContext context, int index) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.account_circle,
                             color: Colors.white,
-                            size: 50,
+                            size: 40,
                           ),
-                          SizedBox(
-                            width: 10,
+                          const SizedBox(
+                            width: 8,
                           ),
                           Text(
-                            'nomeusuario',
-                            style: TextStyle(
+                            people[index]['name'],
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
                             ),
                           ),
-                          Spacer(),
-                          Icon(
+                          const Spacer(),
+                          const Icon(
                             Icons.more_vert,
                             color: Colors.white,
                           ),
                         ],
                       ),
                     ),
-                    Container(
-                      color: Colors.grey,
-                      height: 300,
-                    ),
+                    Image.network(people[index]['img'],
+                        width: double.infinity, height: 400, fit: BoxFit.cover),
                     Row(
                       children: [
                         IconButton(
@@ -177,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: Colors.white),
                           onPressed: () {},
                         ),
-                        Spacer(),
+                        const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.bookmark_outline,
                               color: Colors.white),
@@ -185,29 +276,32 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
-                          '1000 curtidas',
-                          style: TextStyle(
+                          people[index]['likes'] + ' curtidas',
+                          style: const TextStyle(
                               color: Colors.white, fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
-                    const Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Text(
-                          'nomeusuario ',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          'Descrição do post',
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 8),
+                      child: RichText(
+                        text: TextSpan(
                           style: TextStyle(color: Colors.white),
+                          children: [
+                            TextSpan(
+                                text: people[index]['username'],
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                              text: ' ' + people[index]['desc'],
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                     const Row(
                       children: [
