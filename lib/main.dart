@@ -126,6 +126,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    fetchPhotos();
+  }
+
   Future<void> fetchPhotos() async {
     const apiKey = 'U7KfROdTkvR0sWH5PBIxIULBT5KIvoGEeyadd2kbLucDgk1tTJPNW01E';
     const query = 'programing';
@@ -143,8 +149,8 @@ class _MyHomePageState extends State<MyHomePage> {
           for (var i = 0; i < people.length - 1; i++) {
             people[i]['img'] = data['photos'][i]['src']['original'];
           }
+          isLoading = false;
         });
-        isLoading = false;
       } else {
         throw Exception('Failed to load photos');
       }
@@ -188,18 +194,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
 
-      body: FutureBuilder<void>(
-        future: fetchPhotos(),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          if (isLoading) {
-            return const Center(
-                child: CircularProgressIndicator(
-              color: Colors.white,
-            ));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Erro: ${snapshot.error}'));
-          } else {
-            return SingleChildScrollView(
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            )
+          : SingleChildScrollView(
               child: Column(
                 children: [
                   SizedBox(
@@ -264,10 +265,12 @@ class _MyHomePageState extends State<MyHomePage> {
                               ],
                             ),
                           ),
-                          Image.network(people[index]['img'],
-                              width: double.infinity,
-                              height: 400,
-                              fit: BoxFit.cover),
+                          Image.network(
+                            people[index]['img'],
+                            width: double.infinity,
+                            height: 400,
+                            fit: BoxFit.cover,
+                          ),
                           Row(
                             children: [
                               IconButton(
@@ -300,8 +303,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               Text(
                                 people[index]['likes'] + ' curtidas',
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
@@ -314,9 +318,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                   style: const TextStyle(color: Colors.white),
                                   children: [
                                     TextSpan(
-                                        text: people[index]['username'],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
+                                      text: people[index]['username'],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     TextSpan(
                                       text: ' ${people[index]['desc']}',
                                     ),
@@ -328,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               SizedBox(width: 10),
                               Text(
-                                'Ver todos comentários',
+                                'Ver todos os comentários',
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ],
@@ -338,8 +344,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               SizedBox(width: 10),
                               Text(
                                 'há 5 minutos • Ver tradução',
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -349,10 +357,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-            );
-          }
-        },
-      ),
+            ),
 
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
