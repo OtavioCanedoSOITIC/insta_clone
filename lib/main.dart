@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Instagram'),
@@ -58,6 +58,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedItem = 0;
+  bool isLoading = true;
+
   final List people = [
     {
       'name': 'Otavio Canedo',
@@ -99,54 +101,55 @@ class _MyHomePageState extends State<MyHomePage> {
       'img': '',
     },
     {
-      'name': 'Danilo',
-      'username': 'danilo',
+      'name': 'Danilo Augusto',
+      'username': 'daniloaugusto',
       'likes': '150',
       'desc':
           'Vivendo a vida com paixão pela programação! 🌟👨‍💻 #CodePassion',
       'img': '',
     },
     {
-      'name': 'Alexandre',
-      'username': 'alexandre',
+      'name': 'Alexandre Ventura',
+      'username': 'alexandreventura',
       'likes': '160',
       'desc':
           'Amor pela tecnologia e pela resolução de problemas. 💡🔧 Juntos, podemos criar um futuro digital incrível!',
       'img': '',
     },
+    {
+      'name': 'Ana Bia',
+      'username': 'anabia',
+      'likes': '1000',
+      'desc': '',
+      'img':
+          'https://s3-us-west-2.amazonaws.com/fasow/1/imagens/3z4n5i2nCCHBQkXI9rM9.png',
+    }
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    fetchPhotos();
-  }
-
   Future<void> fetchPhotos() async {
-    final apiKey = 'U7KfROdTkvR0sWH5PBIxIULBT5KIvoGEeyadd2kbLucDgk1tTJPNW01E';
-    final query = 'technology';
+    const apiKey = 'U7KfROdTkvR0sWH5PBIxIULBT5KIvoGEeyadd2kbLucDgk1tTJPNW01E';
+    const query = 'programing';
 
-    final response = await http.get(
+    try {
+      final response = await http.get(
         Uri.parse('https://api.pexels.com/v1/search?query=$query'),
-        headers: {
-          'Authorization': apiKey,
+        headers: {'Authorization': apiKey},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        setState(() {
+          for (var i = 0; i < people.length - 1; i++) {
+            people[i]['img'] = data['photos'][i]['src']['original'];
+          }
         });
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      // Atualiza a URL da imagem para a primeira pessoa na lista
-      setState(() {
-        people[0]['img'] = data['photos'][0]['src']['small'];
-        people[1]['img'] = data['photos'][1]['src']['small'];
-        people[2]['img'] = data['photos'][2]['src']['small'];
-        people[3]['img'] = data['photos'][3]['src']['small'];
-        people[4]['img'] = data['photos'][4]['src']['small'];
-        people[5]['img'] = data['photos'][5]['src']['small'];
-        people[6]['img'] = data['photos'][6]['src']['small'];
-      });
-    } else {
-      throw Exception('Failed to load photos');
+        isLoading = false;
+      } else {
+        throw Exception('Failed to load photos');
+      }
+    } catch (e) {
+      print('Error fetching photos: $e');
     }
   }
 
@@ -184,149 +187,171 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 120,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: List.generate(people.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.account_circle,
-                          color: Colors.white,
-                          size: 60,
-                        ),
-                        Text(
-                          people[index]['username'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
+
+      body: FutureBuilder<void>(
+        future: fetchPhotos(),
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          if (isLoading) {
+            return const Center(
+                child: CircularProgressIndicator(
+              color: Colors.white,
+            ));
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erro: ${snapshot.error}'));
+          } else {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 120,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: List.generate(people.length, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.account_circle,
+                                color: Colors.white,
+                                size: 60,
+                              ),
+                              Text(
+                                people[index]['username'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      }),
                     ),
-                  );
-                }),
-              ),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: people.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Row(
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: people.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.account_circle,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            people[index]['name'],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.account_circle,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  people[index]['name'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Icon(
+                                  Icons.more_vert,
+                                  color: Colors.white,
+                                ),
+                              ],
                             ),
                           ),
-                          const Spacer(),
-                          const Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
+                          Image.network(people[index]['img'],
+                              width: double.infinity,
+                              height: 400,
+                              fit: BoxFit.cover),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.favorite_border,
+                                    color: Colors.white),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                    Icons.chat_bubble_outline_outlined,
+                                    color: Colors.white),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.send_outlined,
+                                    color: Colors.white),
+                                onPressed: () {},
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(Icons.bookmark_outline,
+                                    color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const SizedBox(width: 10),
+                              Text(
+                                people[index]['likes'] + ' curtidas',
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          if (people[index]['desc'] != '')
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 8),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: const TextStyle(color: Colors.white),
+                                  children: [
+                                    TextSpan(
+                                        text: people[index]['username'],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    TextSpan(
+                                      text: ' ${people[index]['desc']}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          const Row(
+                            children: [
+                              SizedBox(width: 10),
+                              Text(
+                                'Ver todos comentários',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                          const Row(
+                            children: [
+                              SizedBox(width: 10),
+                              Text(
+                                'há 5 minutos • Ver tradução',
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ),
-                    Image.network(people[index]['img'],
-                        width: double.infinity, height: 400, fit: BoxFit.cover),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.favorite_border,
-                              color: Colors.white),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.chat_bubble_outline_outlined,
-                              color: Colors.white),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.send_outlined,
-                              color: Colors.white),
-                          onPressed: () {},
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.bookmark_outline,
-                              color: Colors.white),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const SizedBox(width: 10),
-                        Text(
-                          people[index]['likes'] + ' curtidas',
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 8),
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(color: Colors.white),
-                          children: [
-                            TextSpan(
-                                text: people[index]['username'],
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(
-                              text: ' ' + people[index]['desc'],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Text(
-                          'Ver todos comentários',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    const Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Text(
-                          'há 5 minutos • Ver tradução',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
+        },
       ),
 
       bottomNavigationBar: BottomNavigationBar(
