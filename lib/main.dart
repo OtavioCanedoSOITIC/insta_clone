@@ -116,14 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
           'Amor pela tecnologia e pela resolução de problemas. 💡🔧 Juntos, podemos criar um futuro digital incrível!',
       'img': '',
     },
-    {
-      'name': 'Ana Bia',
-      'username': 'anabia',
-      'likes': '1000',
-      'desc': '',
-      'img':
-          'https://s3-us-west-2.amazonaws.com/fasow/1/imagens/3z4n5i2nCCHBQkXI9rM9.png',
-    }
   ];
 
   @override
