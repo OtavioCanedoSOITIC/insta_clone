@@ -138,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final Map<String, dynamic> data = json.decode(response.body);
 
         setState(() {
-          for (var i = 0; i < people.length - 1; i++) {
+          for (var i = 0; i < people.length; i++) {
             people[i]['img'] = data['photos'][i]['src']['original'];
           }
           isLoading = false;
